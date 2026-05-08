@@ -1,0 +1,92 @@
+
+
+the code written today is in [[main]]
+
+and the basic character printing is done
+
+lets try to add event handling such that when we press any button the character moves accordingly 
+
+we may achieve this by 
+row--  if we press A
+row ++ if we press D
+
+col -- if we press W
+col ++ if we press S
+
+
+here we get the keyboard button pressed by using termios.h
+
+the termios struct contains all data about input and output 
+
+then tcgetattr(0, &t)
+
+here tcgetattr mean  terminal control get attribute
+ 0 is for stdin
+
+we have 2 types 
+raw and canonical
+
+in canonical we need to press enter so input is read by program
+in raw the input is directly sent to program
+
+echo is when the terminal prints whatever we type , when input we dont need terminal to print , so we disable echo
+
+read function is used to take input , it is called from unistd
+
+so we make 2 functions 
+raw mode and normal model
+
+
+we  store all flags in variable t with struct termios datatype
+
+raw mode main code:
+```
+struct termios t;
+tcgetattr(0, &t);
+t.c_lflag &= ~ICANON;
+t.c_lflag &= ~ECHO;
+t.c_cc[VMIN] = 0;
+t.c_cc[VTIME] = 0;
+tcsetattr(0, TCSANOW, &t);
+```
+
+normal mode main code:
+```
+struct termios t;
+tcgetattr(0, &t);
+t.c_lflag |= ICANON;
+t.c_lflag |= ECHO;
+tcsetattr(0, TCSANOW, &t);
+```
+
+
+we use this code to take input:
+```
+read(0, &varname, 1);
+```
+
+in main 
+1. call raw mode
+2. read in while loop
+3. make event handling
+4. call normal mode when  closing main
+
+
+
+
+
+now in terminal our @ symbol moves using w a s d
+we keep track of previous position to erase @ there
+before drawing at new position — prevents trail effect
+order must always be: erase old → update position → draw new
+
+basic border collision:
+row < 2 → row = 2 
+row > win_row → row = win_row 
+same for col
+
+and now our character is :
+```
+^_^
+```
+hehe
