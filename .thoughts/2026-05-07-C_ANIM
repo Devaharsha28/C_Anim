@@ -1,0 +1,139 @@
+Today , i was fascinated by the terminal user interface applications ,
+so now i have decided to learn animations in terminal using c language
+I just know the basic syntax of C language 
+
+
+today i will be learning about basic things such as ansi codes and frame loops , etc
+
+
+
+---
+# ANSI escape codes
+these arent typical words or characters but commands sent to terminal 
+the syntax of ANSI code is :
+	\033[argument  letter
+	
+here \033 is escape sign , and [ divides escape code and argument 
+here argument is data 
+and letter is a command or can be said as opcode
+
+
+
+basic argument and letters 
+\033  [  2          J      — clear screen
+\033  [  1;1        H      — move cursor to row 1 col 1
+\033  [  ?25l       (none) — hide cursor
+\033  [  ?25h       (none) — show cursor
+\033  [  31m        (none) — red color
+\033  [  0          m      — reset color
+
+basic meaning of few letters
+H    — move cursor (needs row;col as argument)
+J    — clear screen (2 means whole screen)
+m    — color/style command
+
+
+we use \033[2 J            for clear terminal 
+\033[row;column H    for moving cursor position
+
+
+# color table for m letter 
+30    black
+31    red
+32    green
+33    yellow
+34    blue
+35    magenta
+36    cyan
+37    white
+0       reset 
+these are for foreground colors 
+40-47 are same colors but for background
+
+we use with \033[color m
+
+
+
+---
+# The Algorithm
+
+```
+include necessary headers[stdio.h, unistd.h , etc..]
+
+start main
+
+    initialize terminal
+        clear screen
+        hide cursor
+    
+    initialize state
+        declare any variables needed for animation
+
+    start loop
+        move cursor to draw position
+        draw current frame
+        flush output
+        update state
+        sleep
+    end loop
+
+    restore terminal
+        show cursor
+
+end main
+```
+
+
+The 4 steps to be executed every frame :
+1. draw      — put something on screen
+2. flush     — force terminal to show it
+3. update    — change the state for next frame
+4. sleep     — control speed
+
+I can remember this 4 steps with the sentence :
+```
+Divergent Fist unleashes suffering.
+```
+actually divergent fist is itadori yuji's signature technique in jujutsu kaisen
+flush is done by fflush(stdout) so that system directly outputs whatever is in the buffer rather waiting for any conditions 
+
+
+
+Even knowing the size of terminal matters here so even there's a algorithm for it 
+
+```c
+#include <stdio.h>
+#include <sys/ioctl.h>
+
+int main() {
+    struct winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+    printf("rows: %d\n", w.ws_row);
+    printf("cols: %d\n", w.ws_col);
+    return 0;
+}
+```
+this always will be the same code for any program
+
+
+## this is what each line does  
+struct winsize w       — declares a container to hold the terminal size
+ioctl(0, TIOCGWINSZ, &w)  — asks OS to fill that container with dimensions
+w.ws_row               — the rows value inside the container
+w.ws_col               — the cols value inside the container
+
+1. include the sys/ioctl.h header
+2. make a variable with struct winsize as datatype
+3. ioctl function sends the terminal size data to the variable 
+4. the arguments of ioctl function is :
+				   0 for stdin , which is terminal 
+				   tiocgwinsz indicates the sentence :
+				      TIOC    —  Terminal Input Output Control
+					  G       —  Get
+					  WIN     —  Window
+                      SZ      —  Size
+                    var_name with & addressing operator 
+ 5.  the data is stored in var_name.ws_row and var_name.ws_col
+
+
+		futher continued in[[2026-05-08-C_ANIM]]
